@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package quotes.v1;
+
+import "google/api/annotations.proto";
+import "google/api/httpbody.proto";
+
+option go_package = "example.com/cpp_grpc_http/gateway/gen/quotes/v1;quotesv1";
+
+// The google.api.http options below are the only REST-specific part of this
+// service. The C++ handlers in server/ never look at them; Envoy and
+// gRPC-Gateway read them from the descriptor / generated code.
+service Quotes {
+  // Path parameter binding: {id} fills GetQuoteRequest.id.
+  rpc GetQuote(GetQuoteRequest) returns (Quote) {
+    option (google.api.http) = { get: "/v1/quotes/{id}" };
+  }
+
+  // JSON body: body "*" maps the whole request body onto CreateQuoteRequest.
+  rpc CreateQuote(CreateQuoteRequest) returns (Quote) {
+    option (google.api.http) = { post: "/v1/quotes" body: "*" };
+  }
+
+  // Server streaming. Query parameters (?min_price=) bind to request fields.
+  rpc ListQuotes(ListQuotesRequest) returns (stream Quote) {
+    option (google.api.http) = { get: "/v1/quotes" };
+  }
+
+  // Non-JSON response: the one case where the C++ handler must know about
+  // HTTP (it sets HttpBody.content_type and .data).
+  rpc GetChart(GetQuoteRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = { get: "/v1/quotes/{id}/chart" };
+  }
+}
+
+message Quote {
+  string id = 1;
+  string symbol = 2;
+  double price = 3;
+}
+
+message GetQuoteRequest {
+  string id = 1;
+}
+
+message CreateQuoteRequest {
+  string symbol = 1;
+  double price = 2;
+}
+
+message ListQuotesRequest {
+  double min_price = 1;
+}

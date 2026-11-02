@@ -1,0 +1,3 @@
+build/
+gateway/gen/
+envoy/proto.pb

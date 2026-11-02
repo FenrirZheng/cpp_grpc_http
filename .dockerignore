@@ -1,0 +1,7 @@
+*
+!proto/**
+!third_party/**
+!server/**
+!proto/
+!third_party/
+!server/
